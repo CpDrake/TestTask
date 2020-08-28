@@ -197,12 +197,8 @@ public class WhiskTest1_2 {
         createShoppingList();
         addItemsToList();
         checkItemsByName();
-        //deleteShoppingList();
-        //navigateToShoppingTab();
-        //noUsersShoppingLists();
 
     }
-
 
     @Test(priority = 2, description = "delete shopping list from test1")
     public void testWhisk2() {
@@ -213,7 +209,6 @@ public class WhiskTest1_2 {
 
     }
 
-
     @AfterClass(alwaysRun = true)
     public void tearDown() {
         driver.quit();
@@ -222,6 +217,4 @@ public class WhiskTest1_2 {
             fail(verificationErrorString);
         }
     }
-
-
 }
