@@ -1,13 +1,8 @@
-//package
 
 import java.util.concurrent.TimeUnit;
-
 import org.openqa.selenium.support.ui.*;
-import org.testng.Assert;
 import org.testng.annotations.*;
-
 import static org.testng.Assert.*;
-
 import org.openqa.selenium.*;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -21,9 +16,7 @@ import java.net.URI;
 public class WhiskTest1 {
 
     private RemoteWebDriver driver;
-    //private String baseUrl;
     private String baseUrl = "http://my.whisk-dev.com";
-    private boolean acceptNextAlert = true;
     private StringBuffer verificationErrors = new StringBuffer();
 
     // Test Credentials for enter
@@ -48,15 +41,12 @@ public class WhiskTest1 {
     // Main page
     private String letsGetCookingButton = "/html/body/div[2]/div/div[2]/div/button/div/div";
     private String shoppingTab = "/html/body/div[1]/div[1]/nav[1]/div/div[4]/a";
-    private String whiskLogo = "use";
 
     // Shopping Tab
-    private String createNewListButton = "/html/body/div[1]/div[2]/div[1]/div[1]/div[2]/a/div";
-
+    private String createNewListButton = "Create new list"; // by link text
     private String createShoppingListButton = "/html/body/div[2]/div/div[2]/div[2]/form/div[2]/button[2]/div/div";
     private String addItemField = "/html/body/div[1]/div[2]/div[1]/div[2]/div[1]/div[2]/div/div/div/div[1]/input";
     private String addItemButton = "/html/body/div[1]/div[2]/div[1]/div[2]/div[1]/div[2]/div/div/div/div[2]/div/div[1]/div/div[2]/span";
-    private String shoppingListOptionsButton = "button.sc-1s47cec.sc-wt4p2i.fFXDsB > svg";
 
     private String locatorItem1 = "//div[@id='app']/div[2]/div/div[2]/div[2]/div[5]/div/div/div/div[2]/div/div/div/div[2]/div/span";
     private String locatorItem2 = "//div[@id='app']/div[2]/div/div[2]/div[2]/div[3]/div/div/div/div[2]/div/div/div/div[2]/div/span";
@@ -64,18 +54,9 @@ public class WhiskTest1 {
     private String locatorItem4 = "//div[@id='app']/div[2]/div/div[2]/div[2]/div[2]/div/div/div/div[2]/div/div/div/div[2]/div/span";
     private String locatorItem5 = "//div[@id='app']/div[2]/div/div[2]/div[2]/div[7]/div/div/div/div[2]/div/div/div/div[2]/div/span";
 
-    private String deleteListButton = "(//button[@type='button'])[5]";
-    private String defaultListButton = "(//button[@type='button'])[4]";
-    private String confirmDeleteButton = "//button[2]/div/div";
-    private String listWasDeletedNotification = "//div[@id='app']/div[3]/div/div/div";
-
-    private String shoppingList = "//div[@id='app']/div[2]/div/div/div/div/div"; // defaultShoppingList
-    private String textDefaultShoppingList = "Shopping List";
-    private String textDefaultList = "Default list";
 
     public static void main(String[] args) {
 
-        System.out.printf("Whisk UI Test1 selenoid start");
         TestListenerAdapter tla = new TestListenerAdapter();
         TestNG testng = new TestNG();
         testng.addListener((ITestNGListener) tla);
@@ -86,8 +67,8 @@ public class WhiskTest1 {
     @BeforeClass(alwaysRun = true)
     public void setUp() throws Exception {
         DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setBrowserName("opera"); //available browsers firefox chrome opera
-        capabilities.setVersion("69.0"); //versions                   79.0   84.0   69.0
+        capabilities.setBrowserName("firefox");
+        capabilities.setVersion("79.0");
         capabilities.setCapability("enableVNC", true);
         capabilities.setCapability("enableVideo", false);
 
@@ -108,9 +89,6 @@ public class WhiskTest1 {
         driver.findElement(By.name(emailFieldLocator)).clear();
         driver.findElement(By.name(emailFieldLocator)).sendKeys(myEmail); // enter user email
         driver.findElement(By.xpath(continueButtonLocator)).click(); // push "Continue" button
-        //driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
-        //driver.manage().timeouts().pageLoadTimeout(100, TimeUnit.SECONDS);
-
         driver.findElement(By.cssSelector(passwordClickLocator)).click();
         driver.findElement(By.name(passwordFieldLocator)).click();
         driver.findElement(By.name(passwordFieldLocator)).clear();
@@ -130,7 +108,7 @@ public class WhiskTest1 {
 
     private void createShoppingList() {
 
-        driver.findElement(By.xpath(createNewListButton)).click(); // push create new list button
+        driver.findElement(By.linkText(createNewListButton)).click();
         driver.findElement(By.xpath(createShoppingListButton)).click(); // push create button
 
     }
@@ -169,29 +147,9 @@ public class WhiskTest1 {
 
     }
 
-    private void deleteShoppingList() {
-
-        driver.findElement(By.cssSelector(shoppingListOptionsButton)).click(); // click to list options button
-        driver.findElement(By.xpath(deleteListButton)).click(); // select Delete list
-        driver.findElement(By.xpath(confirmDeleteButton)).click(); // confirm deletion
-        driver.findElement(By.xpath(listWasDeletedNotification)).click(); // list was deleted notification click
-
-    }
-
-    private void noUsersShoppingLists() {
-
-        WebElement defaultShoppingList = driver.findElement(By.xpath(shoppingList));
-        WebDriverWait waitShoppingListName = new WebDriverWait(driver, 20);
-        waitShoppingListName.until(ExpectedConditions.textToBePresentInElement(defaultShoppingList, textDefaultShoppingList)); // wait for text to be present
-        driver.findElement(By.cssSelector(shoppingListOptionsButton)).click(); // click to list options button
-        WebElement elementDefaultListButton = driver.findElement(By.xpath(defaultListButton));
-        WebDriverWait waitElementDefaultList = new WebDriverWait(driver, 20);
-        waitElementDefaultList.until(ExpectedConditions.textToBePresentInElement(elementDefaultListButton, textDefaultList)); // wait for text to be present
-
-    }
 
     @Test(priority = 1, description = "create new shopping list, add 5 items to list, check items")
-    public void testWhisk1() throws Exception {
+    public void testWhisk1() {
 
         driver.get(baseUrl);
         signIn();
@@ -202,54 +160,13 @@ public class WhiskTest1 {
 
     }
 
-    @Test(priority = 2, description = "delete shopping list from test1, check that count of shopping lists = 0")
-    public void testWhisk2() throws Exception {
-
-        deleteShoppingList();
-        navigateToShoppingTab();
-        noUsersShoppingLists();
-
-    }
 
     @AfterClass(alwaysRun = true)
-    public void tearDown() throws Exception {
+    public void tearDown(){
         driver.quit();
         String verificationErrorString = verificationErrors.toString();
         if (!"".equals(verificationErrorString)) {
             fail(verificationErrorString);
-        }
-    }
-
-    private boolean isElementPresent(By by) {
-        try {
-            driver.findElement(by);
-            return true;
-        } catch (NoSuchElementException e) {
-            return false;
-        }
-    }
-
-    private boolean isAlertPresent() {
-        try {
-            driver.switchTo().alert();
-            return true;
-        } catch (NoAlertPresentException e) {
-            return false;
-        }
-    }
-
-    private String closeAlertAndGetItsText() {
-        try {
-            Alert alert = driver.switchTo().alert();
-            String alertText = alert.getText();
-            if (acceptNextAlert) {
-                alert.accept();
-            } else {
-                alert.dismiss();
-            }
-            return alertText;
-        } finally {
-            acceptNextAlert = true;
         }
     }
 }
