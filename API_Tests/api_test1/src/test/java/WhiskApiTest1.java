@@ -14,29 +14,33 @@ import java.util.LinkedHashMap;
 
 class WhiskApiTest1 {
 
-    String baseURI = "https://api.whisk-dev.com/";
-    String accessToken = "Bearer 4PkSbMXhfI4xMmdWy9xpTLLHkvImTGkY84zW9xbbdR8Dm4Q8FH0BL3Sdy73mdkSo";
+    private String baseURI = "https://api.whisk-dev.com/";
+    private String accessToken = "Bearer 4PkSbMXhfI4xMmdWy9xpTLLHkvImTGkY84zW9xbbdR8Dm4Q8FH0BL3Sdy73mdkSo";
 
     // requests
-    String createShoppingList = baseURI + "list/v2";
-    String getShoppingList = baseURI + "list/v2/";
+    private String createShoppingList = baseURI + "list/v2";
+    private String getShoppingList = baseURI + "list/v2/";
 
-    private static String shoppingListName = "Holiday shopping list";
+    private String shoppingListName = "Holiday shopping list";
 
-    ValidatableResponse responseCreateShoppingList;
-    ValidatableResponse responseGetShoppingListByID;
+    private ValidatableResponse responseCreateShoppingList;
+    private ValidatableResponse responseGetShoppingListByID;
 
+    private String createShoppingListJSON;
+    private String createShoppingListID;
+    private String getShoppingListID;
 
     public static void main(String[] args) {
 
         TestListenerAdapter tla = new TestListenerAdapter();
         TestNG testng = new TestNG();
+        testng.setTestClasses(new Class[] { WhiskApiTest1.class });
         testng.addListener((ITestNGListener) tla);
         testng.run();
 
     }
 
-    public static String generateJSONCreateShoppingList() {
+    private String generateJSONCreateShoppingList() {
         JSONObject createShoppingListData = new JSONObject();
 
         createShoppingListData.put("name", shoppingListName);
@@ -45,11 +49,7 @@ class WhiskApiTest1 {
         return createShoppingListData.toJSONString();
     }
 
-    @Test (priority = 1, description="test API methods CreateShoppingList, GetShoppingList")
-    public void checkCreateShoppingListTest() {
-
-        // generate JSON for create shopping list
-        String createShoppingListJSON = generateJSONCreateShoppingList();
+    private ValidatableResponse createShoppingList(){
 
         // create shopping list
         responseCreateShoppingList = given().
@@ -61,9 +61,13 @@ class WhiskApiTest1 {
                 then().
                 contentType(ContentType.JSON);
 
-        String createShoppingListID = responseCreateShoppingList.extract().path("list.id"); // extract list ID from response CreateShoppingList
+        return responseCreateShoppingList;
 
-        // get shopping list
+    }
+
+    private ValidatableResponse getShoppingList(){
+
+       // get shopping list
         responseGetShoppingListByID = given().
                 header("Content-Type", "application/json").
                 header("Authorization", accessToken).
@@ -72,16 +76,26 @@ class WhiskApiTest1 {
                 then().
                 contentType(ContentType.JSON);
 
+        return responseCreateShoppingList;
 
-        String getShoppingListID = responseGetShoppingListByID.extract().path("list.id"); // extract list ID from response GetShoppingList
+    }
+
+    @Test (priority = 1, description="test API methods CreateShoppingList, GetShoppingList")
+    public void checkCreateShoppingListTest() {
+
+        createShoppingListJSON = generateJSONCreateShoppingList(); // generate JSON for create shopping list
+        createShoppingList(); // create shopping list
+        createShoppingListID = responseCreateShoppingList.extract().path("list.id"); // extract list ID from response CreateShoppingList
+        getShoppingList(); // get shopping list
+        getShoppingListID = responseGetShoppingListByID.extract().path("list.id"); // extract list ID from response GetShoppingList
 
         Boolean idIsEqual = getShoppingListID.equals(createShoppingListID); // compare ID from GetShoppingList with ID from CreateShoppingList
         if (idIsEqual != true) {
             Assert.fail(); // if ID not equals send Error
         }
 
-        LinkedHashMap<String, Integer>  getShoppingListContent = responseGetShoppingListByID.extract().path("content"); // extract content from get shopping list
-        int getShoppingListContentSize = getShoppingListContent.size(); // count content size
+        LinkedHashMap<String, Integer>  getShoppingListContent = responseGetShoppingListByID.extract().path("content"); // extract content from shopping list
+        int getShoppingListContentSize = getShoppingListContent.size(); // get content size
         if (getShoppingListContentSize != 0){
             Assert.fail(); // if content is not empty send Error
         }
