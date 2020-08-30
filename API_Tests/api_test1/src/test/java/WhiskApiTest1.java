@@ -3,7 +3,6 @@ import io.restassured.http.ContentType;
 import io.restassured.response.ValidatableResponse;
 import static io.restassured.RestAssured.given;
 import org.json.simple.JSONObject;
-
 import org.junit.Assert;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;
@@ -11,11 +10,9 @@ import org.testng.annotations.*;
 import org.testng.ITestNGListener;
 import org.testng.TestListenerAdapter;
 import org.testng.TestNG;
-
 import java.util.LinkedHashMap;
 
-
-public class WhiskApiTest1 {
+class WhiskApiTest1 {
 
     String baseURI = "https://api.whisk-dev.com/";
     String accessToken = "Bearer 4PkSbMXhfI4xMmdWy9xpTLLHkvImTGkY84zW9xbbdR8Dm4Q8FH0BL3Sdy73mdkSo";
@@ -53,8 +50,6 @@ public class WhiskApiTest1 {
 
         // generate JSON for create shopping list
         String createShoppingListJSON = generateJSONCreateShoppingList();
-        System.out.printf("\n create shopping listJSON: " + createShoppingListJSON); // This need for debug
-
 
         // create shopping list
         responseCreateShoppingList = given().
@@ -64,22 +59,9 @@ public class WhiskApiTest1 {
                 when().
                 post(createShoppingList).
                 then().
-                //statusCode(200).
                 contentType(ContentType.JSON);
 
-        // return create shopping list status code
-        Integer createShoppingListStatusCode = responseCreateShoppingList.extract().statusCode();
-        System.out.printf("\nNEEDFORLOG CreateShoppingList Status Code: " + createShoppingListStatusCode);
-
-        // create shopping list Estimate Time
-        long createShoppingListTime = responseCreateShoppingList.extract().time();
-        System.out.printf("\nNEEDFORLOG create Shopping list Estimate time: " + createShoppingListTime);
-
-        String responseBodyCreateList = responseCreateShoppingList.extract().asString(); // extract string from response
-        System.out.printf("\nResponse createShoppingList: " + responseBodyCreateList); // Show information in console. This need for debug
-
-        String createShoppingListID = responseCreateShoppingList.extract().path("list.id"); // destinationCode
-        System.out.printf("\n ID from CreateShoppingList: " + createShoppingListID);
+        String createShoppingListID = responseCreateShoppingList.extract().path("list.id"); // extract list ID from response CreateShoppingList
 
         // get shopping list
         responseGetShoppingListByID = given().
@@ -88,49 +70,20 @@ public class WhiskApiTest1 {
                 when().
                 get(getShoppingList + createShoppingListID).
                 then().
-                //statusCode(200).
                 contentType(ContentType.JSON);
 
-        // return get shopping list status code
-        Integer getShoppingListStatusCode = responseGetShoppingListByID.extract().statusCode();
-        System.out.printf("\nNEEDFORLOG Get ShoppingList Status Code: " + getShoppingListStatusCode); // Show information in console. This need for debug
 
-        // get shopping list Estimate Time
-        long getShoppingListTime = responseGetShoppingListByID.extract().time();
-        System.out.printf("\nNEEDFORLOG Get Shopping list Estimate time: " + getShoppingListTime); // Show information in console. This need for debug
+        String getShoppingListID = responseGetShoppingListByID.extract().path("list.id"); // extract list ID from response GetShoppingList
 
-        String responseBodyGetShoppingList = responseGetShoppingListByID.extract().asString(); // extract string from response
-        System.out.printf("\nResponse Get Shopping List: " + responseBodyGetShoppingList); // Show information in console. This need for debug
-
-        String getShoppingListID = responseGetShoppingListByID.extract().path("list.id");
-        System.out.printf("\n ID from GetShoppingList: " + getShoppingListID); // Show information in console. This need for debug
-
-        //LinkedHashMap<String, Integer> getShoppingList = responseGetShoppingListByID.extract().path("list");
-        //System.out.printf("\n Content from GetShoppingList: " + getShoppingList); // Show information in console. This need for debug
-
-        // Show information in console. This need for debug
-        LinkedHashMap<String, Integer>  getShoppingList = responseGetShoppingListByID.extract().path("list");
-        System.out.printf("\n Content from GetShoppingList: " + getShoppingList); // Show information in console. This need for debug
-        int getShoppingListSize = getShoppingList.size();
-        System.out.printf("\n list size: " + getShoppingListSize);
-
-        if (getShoppingListSize == 0){
-            Assert.fail();
-        }
-
-        Boolean idIsEqual = getShoppingListID.equals(createShoppingListID);
+        Boolean idIsEqual = getShoppingListID.equals(createShoppingListID); // compare ID from GetShoppingList with ID from CreateShoppingList
         if (idIsEqual != true) {
-            Assert.fail();
+            Assert.fail(); // if ID not equals send Error
         }
 
-        LinkedHashMap<String, Integer>  getShoppingListContent = responseGetShoppingListByID.extract().path("content");
-        System.out.printf("\n Content from GetShoppingList: " + getShoppingListContent); // Show information in console. This need for debug
-
-        int getShoppingListContentSize = getShoppingListContent.size();
-        System.out.printf("\n Content size: " + getShoppingListContentSize); // Show information in console. This need for debug
-
+        LinkedHashMap<String, Integer>  getShoppingListContent = responseGetShoppingListByID.extract().path("content"); // extract content from get shopping list
+        int getShoppingListContentSize = getShoppingListContent.size(); // count content size
         if (getShoppingListContentSize != 0){
-            Assert.fail();
+            Assert.fail(); // if content is not empty send Error
         }
     }
 
