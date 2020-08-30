@@ -75,7 +75,8 @@ class WhiskApiTest2 {
                 when().
                 get(shoppingList + createShoppingListID).
                 then().
-                //statusCode(200). // when this list was deleted - server return statusCode(400) and test failed (in test2 task step4 - Verify that code response = 200 is not correct. Code response = 400)
+                //statusCode(200). // when this list was deleted - server return statusCode(400) and test failed
+                // (in test2 task step4 - Verify that code response = 200 - is not correct. Code response = 400)
                 contentType(ContentType.JSON);
 
         return responseGetShoppingListByID;
