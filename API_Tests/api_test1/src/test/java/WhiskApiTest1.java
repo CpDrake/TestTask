@@ -76,7 +76,7 @@ class WhiskApiTest1 {
                 then().
                 contentType(ContentType.JSON);
 
-        return responseCreateShoppingList;
+        return responseGetShoppingListByID;
 
     }
 
